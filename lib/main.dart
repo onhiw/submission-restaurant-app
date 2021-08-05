@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:submission_restaurant_app/pages/splashscreen.dart';
 import 'package:submission_restaurant_app/utils/routes.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: SplashScreen(),
+    routes: <String, WidgetBuilder>{
+      '/MyApp': (BuildContext context) => MyApp(),
+    },
+  ));
 }
 
 class MyApp extends StatefulWidget {
@@ -31,10 +38,10 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: "Restaurant App",
       debugShowCheckedModeBanner: false,
-      initialRoute: '/home',
+      initialRoute: '/',
       routes: appRoutes,
       theme: ThemeData(
-          textTheme: GoogleFonts.robotoTextTheme(
+          textTheme: GoogleFonts.poppinsTextTheme(
         Theme.of(context).textTheme,
       )),
     );
