@@ -107,7 +107,7 @@ class _SearchRestaurantPageState extends State<SearchRestaurantPage> {
         child: BlocBuilder<SearchRestaurantBloc, SearchRestaurantState>(
           builder: (context, state) {
             if (state is SearchRestaurantInitial) {
-              return _emptySearchQuery();
+              return _emptySearchInitial();
             } else if (state is SearchRestaurantLoading) {
               return Center(child: CircularProgressIndicator());
             } else if (state is SearchRestaurantLoaded) {
@@ -280,7 +280,7 @@ class _SearchRestaurantPageState extends State<SearchRestaurantPage> {
     );
   }
 
-  Widget _emptySearchQuery() {
+  Widget _emptySearchInitial() {
     return Container(
       padding: EdgeInsets.only(left: 16, right: 16),
       child: Column(
