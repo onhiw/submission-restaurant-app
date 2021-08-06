@@ -32,13 +32,15 @@ class _SearchRestaurantPageState extends State<SearchRestaurantPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.black),
         backgroundColor: Colors.white,
         elevation: 0,
         title: Text(
           "Search",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold, color: Colors.black),
         ),
         bottom: PreferredSize(
           child: Padding(
@@ -288,7 +290,7 @@ class _SearchRestaurantPageState extends State<SearchRestaurantPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset(
-            'assets/empty_pindah.png',
+            'assets/empty_search.png',
             height: 162,
           ),
           SizedBox(
@@ -321,7 +323,7 @@ class _SearchRestaurantPageState extends State<SearchRestaurantPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset(
-            'assets/empty_pindah.png',
+            'assets/empty_search.png',
             height: 162,
           ),
           SizedBox(

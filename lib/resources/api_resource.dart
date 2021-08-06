@@ -49,23 +49,4 @@ class ApiService {
       return err;
     }
   }
-
-  Future<RestaurantModel> addReviewRestaurant(
-      String id, String name, String review) async {
-    final Dio _dio = Dio();
-    try {
-      Response _res = await _dio.post('$baseUrl/review',
-          data: {"id": id, "name": name, "review": review},
-          options: Options(
-              contentType: Headers.formUrlEncodedContentType,
-              headers: {"X-Auth-Token": "12345"}));
-      print(_res);
-      final RestaurantModel restaurantModel =
-          RestaurantModel.fromJson(_res.data);
-      return restaurantModel;
-    } catch (err) {
-      print(err);
-      return err;
-    }
-  }
 }
