@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:submission_restaurant_app/pages/splashscreen.dart';
 import 'package:submission_restaurant_app/utils/routes.dart';
 
+import 'constant/constants.dart';
+
 void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
@@ -36,7 +38,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Restaurant App",
+      title: appTitle,
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: appRoutes,
