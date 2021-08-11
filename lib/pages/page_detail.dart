@@ -11,7 +11,7 @@ import 'package:submission_restaurant_app/utils/db_helper.dart';
 
 class DetailPage extends StatefulWidget {
   final String idRestaurant;
-  const DetailPage({Key key, @required this.idRestaurant}) : super(key: key);
+  const DetailPage({Key key, this.idRestaurant}) : super(key: key);
 
   @override
   _DetailPageState createState() => _DetailPageState();
