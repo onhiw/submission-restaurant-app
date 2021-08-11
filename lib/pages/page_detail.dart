@@ -6,6 +6,8 @@ import 'package:shimmer/shimmer.dart';
 import 'package:submission_restaurant_app/bloc/detail-restaurant-bloc/detail_restaurant_bloc.dart';
 import 'package:submission_restaurant_app/constant/constants.dart';
 import 'package:submission_restaurant_app/models/detail_restaurant.dart';
+import 'package:submission_restaurant_app/models/favorite.dart';
+import 'package:submission_restaurant_app/utils/db_helper.dart';
 
 class DetailPage extends StatefulWidget {
   final String idRestaurant;
@@ -17,11 +19,55 @@ class DetailPage extends StatefulWidget {
 
 class _DetailPageState extends State<DetailPage> {
   DetailRestaurantBloc _detailRestaurantBloc = DetailRestaurantBloc();
+  bool isFavorite;
+  Favorite favorite;
+
+  _addFavorite(String idRestaurant, String name, String city, String images,
+      double rating) {
+    var fav = Favorite();
+    fav.idRestaurant = idRestaurant;
+    fav.name = name;
+    fav.city = city;
+    fav.images = images;
+    fav.rating = rating;
+    print("telah di tambahkan");
+    print(fav);
+    var dbHelper = DBHelper();
+    dbHelper.insert(fav);
+  }
+
+  _deleteFavorite(String id) {
+    var dbHelper = DBHelper();
+    setState(() {
+      dbHelper.deleteFavorite(id);
+    });
+  }
+
+  Future<Favorite> _getDataSingleFavorite(String idRestaurant) async {
+    var dbHelper = DBHelper();
+    await dbHelper.getFavorite(idRestaurant).then((value) {
+      print('data favorite');
+      print(value);
+      if (value != null) {
+        favorite = value;
+        setState(() {
+          isFavorite = false;
+        });
+      } else {
+        setState(() {
+          isFavorite = true;
+        });
+      }
+    });
+
+    return favorite;
+  }
 
   @override
   void initState() {
     _detailRestaurantBloc
         .add(GetDetailRestaurant(idRestaurant: widget.idRestaurant));
+    _getDataSingleFavorite(widget.idRestaurant);
     super.initState();
   }
 
@@ -183,23 +229,43 @@ class _DetailPageState extends State<DetailPage> {
                         color: Colors.black,
                         fontWeight: FontWeight.bold),
                   ),
-                  Row(
-                    children: [
-                      Text(
-                        singleRestaurantModel.restaurant.rating.toString(),
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 4,
-                      ),
-                      Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                      ),
-                    ],
+                  GestureDetector(
+                    onTap: () {
+                      if (isFavorite) {
+                        _addFavorite(
+                            singleRestaurantModel.restaurant.id,
+                            singleRestaurantModel.restaurant.name,
+                            singleRestaurantModel.restaurant.city,
+                            singleRestaurantModel.restaurant.pictureId,
+                            singleRestaurantModel.restaurant.rating);
+                        setState(() {
+                          isFavorite = !isFavorite;
+                        });
+                        Fluttertoast.showToast(
+                            msg: "Berhasil menambahkan ke favorite",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.green,
+                            textColor: Colors.white);
+                      } else {
+                        _deleteFavorite(singleRestaurantModel.restaurant.id);
+                        setState(() {
+                          isFavorite = !isFavorite;
+                        });
+                        Fluttertoast.showToast(
+                            msg: "Berhasil menghapus favorite",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.red,
+                            textColor: Colors.white);
+                      }
+                    },
+                    child: Icon(
+                      !isFavorite ? Icons.favorite : Icons.favorite_outline,
+                      color: !isFavorite ? Colors.red : Colors.black,
+                    ),
                   ),
                 ],
               ),
@@ -221,6 +287,23 @@ class _DetailPageState extends State<DetailPage> {
                       fontSize: 14,
                       color: Colors.grey,
                     ),
+                  ),
+                  SizedBox(
+                    width: 8,
+                  ),
+                  Text(
+                    singleRestaurantModel.restaurant.rating.toString(),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 4,
+                  ),
+                  Icon(
+                    Icons.star,
+                    color: Colors.amber,
                   ),
                 ],
               ),

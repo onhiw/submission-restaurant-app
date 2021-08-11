@@ -1,13 +1,18 @@
+import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:submission_restaurant_app/bloc/restaurant-bloc/restaurant_bloc.dart';
 import 'package:submission_restaurant_app/constant/constants.dart';
 import 'package:submission_restaurant_app/models/restaurant.dart';
 import 'package:submission_restaurant_app/pages/page_detail.dart';
+import 'package:submission_restaurant_app/utils/background_service.dart';
+import 'package:submission_restaurant_app/utils/date_time_helper.dart';
+import 'package:submission_restaurant_app/utils/notification_helper.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
@@ -18,17 +23,47 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   RestaurantBloc _restaurantBloc = RestaurantBloc();
+  final NotificationHelper _notificationHelper = NotificationHelper();
+  final BackgroundService _service = BackgroundService();
 
   @override
   void initState() {
     _restaurantBloc.add(GetRestaurant());
+    port.listen((_) async => await _service.someTask());
+    _notificationHelper.configureSelectNotificationSubject(context);
+    _getShared();
     super.initState();
+  }
+
+  _getShared() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    print(prefs.getBool('notif'));
+    if (prefs.getBool('notif') != null) {
+      if (prefs.getBool('notif')) {
+        await AndroidAlarmManager.periodic(
+          Duration(hours: 24),
+          1,
+          BackgroundService.callback,
+          startAt: DateTimeHelper.format(),
+          exact: true,
+          wakeup: true,
+        );
+      } else {
+        await AndroidAlarmManager.cancel(1);
+      }
+    }
   }
 
   Future<void> onRefresh() async {
     setState(() {
       _restaurantBloc.add(GetRestaurant());
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    selectNotificationSubject.close();
   }
 
   @override
@@ -39,13 +74,15 @@ class _HomePageState extends State<HomePage> {
         elevation: 0,
         backgroundColor: Colors.white,
         title: Text(
-          'Submission Restaurant App',
+          'Submission App',
           style: GoogleFonts.poppins(
               fontWeight: FontWeight.bold, color: Colors.black),
         ),
         actions: [
           Padding(
-            padding: EdgeInsets.only(left: 16, right: 16),
+            padding: EdgeInsets.only(
+              left: 16,
+            ),
             child: GestureDetector(
                 onTap: () {
                   Navigator.pushNamed(context, "/search");
@@ -54,7 +91,34 @@ class _HomePageState extends State<HomePage> {
                   Icons.search,
                   color: Colors.black,
                 )),
-          )
+          ),
+          Padding(
+            padding: EdgeInsets.only(
+              right: 16,
+              left: 16,
+            ),
+            child: GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, "/favorite");
+                },
+                child: Icon(
+                  Icons.favorite,
+                  color: Colors.black,
+                )),
+          ),
+          Padding(
+            padding: EdgeInsets.only(
+              right: 16,
+            ),
+            child: GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, "/setting");
+                },
+                child: Icon(
+                  Icons.settings,
+                  color: Colors.black,
+                )),
+          ),
         ],
       ),
       body: _buildListRestaurant(),

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dio/dio.dart';
 import 'package:submission_restaurant_app/constant/constants.dart';
 import 'package:submission_restaurant_app/models/detail_restaurant.dart';
@@ -44,6 +46,23 @@ class ApiService {
       final RestaurantModel restaurantModel =
           RestaurantModel.fromJson(_res.data);
       return restaurantModel;
+    } catch (err) {
+      print(err);
+      return err;
+    }
+  }
+
+  Future<Restaurant> getRandomRestaurant() async {
+    final Dio _dio = Dio();
+    try {
+      Response _res = await _dio.get('$baseUrl/list');
+      print(_res);
+      final random = new Random();
+      List<Restaurant> listRestaurant =
+          RestaurantModel.fromJson(_res.data).restaurants;
+      Restaurant restaurant =
+          listRestaurant[random.nextInt(listRestaurant.length)];
+      return restaurant;
     } catch (err) {
       print(err);
       return err;
